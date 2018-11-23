@@ -182,6 +182,24 @@ impl SecretKey {
             }
         }
     }
+
+    #[inline]
+    /// Inverts (1 / self) this secret key.
+    pub fn inv_assign(&mut self) -> Result<(), Error> {
+        let original = self.clone();
+        unsafe {
+            if ffi::secp256k1_ec_privkey_inverse(
+                ffi::secp256k1_context_no_precomp,
+                self.as_mut_ptr(),
+                original.as_ptr()
+            ) != 1
+            {
+                Err(InvalidSecretKey)
+            } else {
+                Ok(())
+            }
+        }
+    }
 }
 
 #[cfg(feature = "serde")]

@@ -250,6 +250,11 @@ extern "C" {
                                           tweak: *const c_uchar)
                                           -> c_int;
 
+    pub fn secp256k1_ec_privkey_inverse(cx: *const Context,
+                                        out: *mut c_uchar,
+                                        scalar: *const c_uchar)
+                                        -> c_int;
+
     pub fn secp256k1_ec_pubkey_tweak_mul(cx: *const Context,
                                          pk: *mut PublicKey,
                                          tweak: *const c_uchar)
@@ -269,6 +274,14 @@ extern "C" {
         hashfp: EcdhHashFn,
         data: *mut c_void,
     ) -> c_int;
+
+    pub fn secp256k1_ecdh_raw(
+        cx: *const Context,
+        output: *mut SharedSecret,
+        pubkey: *const PublicKey,
+        privkey: *const c_uchar,
+    ) -> c_int;
+
 }
 
 #[cfg(feature = "fuzztarget")]
@@ -603,6 +616,7 @@ mod fuzz_dummy {
         *sk.offset(24) = 0x00; // Ensure sk remains valid no matter what tweak was
         1
     }
+
 
     /// The PublicKey equivalent of secp256k1_ec_privkey_tweak_mul
     pub unsafe fn secp256k1_ec_pubkey_tweak_mul(cx: *const Context,
